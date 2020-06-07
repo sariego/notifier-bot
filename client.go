@@ -40,7 +40,7 @@ type cotalkerMultiCMD struct {
 	Message cotalkerMessage `json:"message"`
 }
 
-func receive() {
+func receive(handler func(msg string, ch string)) {
 	fmt.Println("starting client...")
 
 	url, _ := url.Parse(HOST + "/socket.io-client/")
@@ -89,20 +89,11 @@ func receive() {
 
 		fmt.Println("event:", args[0])
 		fmt.Println("type:", args[1])
-		content := e.Content[0].Content
-		channel := e.Channel[0]
-		log.Printf("read: \"%v\"@%v\n", content, channel)
+		msg := e.Content[0].Content
+		ch := e.Channel[0]
+		log.Printf("read: \"%v\"@%v\n", msg, ch)
 
-		cmd := strings.Split(e.Content[0].Content, " ")
-		if cmd[0][0] == '!' {
-			switch cmd[0][1:] {
-			case "ping":
-				log.Println("exec: PING@", channel)
-				send(e.Channel[0], "pong!")
-			case "meet":
-			}
-		}
-
+		handler(msg, ch)
 	}
 }
 
@@ -150,7 +141,7 @@ func generateCotalkerUUID() string {
 	p0 := fmt.Sprintf("%x", now)
 	p1 := USERID[4:8] + USERID[18:20]
 	p2 := USERID[20:24]
-	p3 := "123456"
+	p3 := "112233"
 
 	return p0 + p1 + p2 + p3
 }

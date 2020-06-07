@@ -1,7 +1,9 @@
 package main
 
 import (
+	"log"
 	"os"
+	"strings"
 
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -16,6 +18,17 @@ var (
 )
 
 func main() {
-	receive()
+	receive(func(msg, ch string) {
+		cmd := strings.Split(msg, " ")
+		if cmd[0][0] == '!' {
+			switch cmd[0][1:] {
+			case "ping":
+				log.Println("exec: PING@", ch)
+				send(ch, "pong!")
+			case "meet":
+			}
+		}
+
+	})
 	// send("599d879410d3150261146e81", "hella from golang")
 }
