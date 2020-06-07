@@ -89,6 +89,10 @@ func receive(handler func(msg string, ch string)) {
 
 		fmt.Println("event:", args[0])
 		fmt.Println("type:", args[1])
+		fmt.Println("subject:", strings.Split(args[1], "#")[0])
+		if strings.Split(args[1][1:], "#")[0] != "message" { // hacky hacky
+			continue
+		}
 		msg := e.Content[0].Content
 		ch := e.Channel[0]
 		log.Printf("read: \"%v\"@%v\n", msg, ch)
