@@ -18,14 +18,6 @@ import (
 	"github.com/googollee/go-engine.io/transport/websocket"
 )
 
-type cotalkerEnvelope struct {
-	Model   string            `json:"model"`
-	Type    string            `json:"type"`
-	Count   int               `json:"count"`
-	Content []cotalkerMessage `json:"content"`
-	Channel []string          `json:"channel"`
-}
-
 type cotalkerMessage struct {
 	ID          string `json:"_id"`
 	Content     string `json:"content"`
@@ -35,13 +27,21 @@ type cotalkerMessage struct {
 	Author      string `json:"sentBy"`
 }
 
+type cotalkerEnvelope struct {
+	Model   string            `json:"model"`
+	Type    string            `json:"type"`
+	Count   int               `json:"count"`
+	Content []cotalkerMessage `json:"content"`
+	Channel []string          `json:"channel"`
+}
+
 type cotalkerMultiCMD struct {
 	Method  string          `json:"method"`
 	Message cotalkerMessage `json:"message"`
 }
 
 func receive(handler func(msg string, ch string)) {
-	fmt.Println("starting client...")
+	log.Println("starting client...")
 
 	url, _ := url.Parse(HOST + "/socket.io-client/")
 	header := http.Header{
@@ -56,10 +56,9 @@ func receive(handler func(msg string, ch string)) {
 		log.Fatalln("error@dial:", err)
 	}
 	defer conn.Close()
-
-	fmt.Println(conn.ID(), conn.LocalAddr(), "~>", conn.RemoteAddr(), "with", conn.RemoteHeader())
-
-	fmt.Println("listening...")
+	log.Println("conn: ", conn.ID(), conn.LocalAddr(), "~>", conn.RemoteAddr())
+	//todo log headers ??
+	log.Println("listening...")
 	for {
 		_, r, err := conn.NextReader()
 		if err != nil {
@@ -75,7 +74,7 @@ func receive(handler func(msg string, ch string)) {
 		if err := r.Close(); err != nil {
 			log.Println("error@read_close:", err)
 		}
-		fmt.Println("bytes:", len(b))
+		log.Println("bytes:", len(b))
 		if len(b) <= 1 {
 			continue
 		}
@@ -84,12 +83,15 @@ func receive(handler func(msg string, ch string)) {
 		var e cotalkerEnvelope
 		err = json.Unmarshal([]byte(args[2]), &e)
 		if err != nil {
-			fmt.Println(err)
+			log.Println("error@cmd_unmarshal:", err)
 		}
 
-		fmt.Println("event:", args[0])
-		fmt.Println("type:", args[1])
-		fmt.Println("subject:", strings.Split(args[1], "#")[0])
+		log.Printf(
+			"parsed: event:%v type:%v subject:%v\n",
+			args[0][1:len(args[0])],
+			args[1],
+			strings.Split(args[1][1:], "#")[0],
+		)
 		if strings.Split(args[1][1:], "#")[0] != "message" { // hacky hacky
 			continue
 		}
@@ -101,7 +103,6 @@ func receive(handler func(msg string, ch string)) {
 	}
 }
 
-// debug target channel 599d879410d3150261146e81
 func send(ch string, msg string) {
 	cmd := cotalkerMultiCMD{
 		Method: "POST",
@@ -121,22 +122,25 @@ func send(ch string, msg string) {
 	}
 	json, err := json.Marshal(body)
 	if err != nil {
-		fmt.Println(err)
+		log.Println("error@cmd_marshal:", err)
 		return
 	}
-	fmt.Println("url:", HOST+"/api/messages/multi")
-	fmt.Println("json:", string(json))
+	m := msg
+	if len(m) > 24 {
+		m = m[:21] + "..."
+	}
+	log.Printf("send: \"%v\"@%v\n", m, ch)
 	req, err := http.NewRequest(http.MethodPost, HOST+"/api/messages/multi", bytes.NewBuffer(json))
-	req.Header.Add("Authorization", "Bearer "+TOKEN)
 	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Bearer "+TOKEN)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		log.Println("error@http_send:", err)
 		return
 	}
 	defer resp.Body.Close()
-	fmt.Printf("res: %+v\n", resp)
+	// fmt.Printf("res: %+v\n", resp)
 }
 
 func generateCotalkerUUID() string {

@@ -23,12 +23,12 @@ func main() {
 		if cmd[0][0] == '!' {
 			switch cmd[0][1:] {
 			case "ping":
-				log.Println("exec: PING@", ch)
+				log.Printf("exec: PING@%v\n", ch)
 				send(ch, "pong!")
 			case "meet":
+				log.Printf("exec: MEET@%v\n", ch)
+				send(ch, meet())
 			}
 		}
-
 	})
-	// send("599d879410d3150261146e81", "hella from golang")
 }
