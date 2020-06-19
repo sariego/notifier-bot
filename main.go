@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	_ "github.com/joho/godotenv/autoload"
+	"sariego.dev/cotalker-bot/handlers"
 )
 
 var (
@@ -27,7 +28,7 @@ func main() {
 				send(ch, "pong!")
 			case "meet":
 				log.Printf("exec: MEET@%v\n", ch)
-				send(ch, meet())
+				send(ch, handlers.Meet())
 			}
 		}
 	})

@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"fmt"
@@ -11,7 +11,8 @@ import (
 var codes = initCodes()
 var cursor = 0
 
-func meet() string {
+// Meet - generates complete message with meet url
+func Meet() string {
 	msg := fmt.Sprintf(
 		"meet.google.com/%v\nhttps://meet.google.com/%v",
 		codes[cursor],
@@ -23,7 +24,7 @@ func meet() string {
 
 func initCodes() []string {
 	// read from meet.dat
-	b, err := ioutil.ReadFile("meet.dat")
+	b, err := ioutil.ReadFile("data/meet.dat")
 	if err != nil {
 		log.Fatalln("fatal_error@read_codes_from_file:", err)
 	}
