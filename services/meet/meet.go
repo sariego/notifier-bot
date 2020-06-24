@@ -1,4 +1,4 @@
-package handlers
+package meet
 
 import (
 	"fmt"
@@ -11,8 +11,8 @@ import (
 var codes = initCodes()
 var cursor = 0
 
-// Meet - generates complete message with meet url
-func Meet() string {
+// Respond - generates complete message with meet url
+func Respond() string {
 	msg := fmt.Sprintf(
 		"meet.google.com/%v\nhttps://meet.google.com/%v",
 		codes[cursor],
@@ -24,16 +24,16 @@ func Meet() string {
 
 func initCodes() []string {
 	// read from meet.dat
-	b, err := ioutil.ReadFile("data/meet.dat")
+	// todo refactor into postgres
+	b, err := ioutil.ReadFile("services/meet/codes.dat")
 	if err != nil {
 		log.Fatalln("fatal_error@read_codes_from_file:", err)
 	}
 
 	// remove final empty line if present
 	s := strings.Split(string(b), "\n")
-	if s[len(s)-1] == "" {
+	if strings.TrimSpace(s[len(s)-1]) == "" {
 		s = s[:len(s)-1]
 	}
 	return s
-
 }

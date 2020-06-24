@@ -2,34 +2,29 @@ package main
 
 import (
 	"log"
-	"os"
 	"strings"
 
-	_ "github.com/joho/godotenv/autoload"
-	"sariego.dev/cotalker-bot/handlers"
-)
-
-var (
-	// HOST cotalker server url
-	HOST string = os.Getenv("COTALKER_HOST")
-	// USERID cotalker bot user id
-	USERID string = os.Getenv("COTALKER_BOT_ID")
-	// TOKEN cotalker bot token
-	TOKEN string = os.Getenv("COTALKER_BOT_TOKEN")
+	"sariego.dev/cotalker-bot/base"
+	"sariego.dev/cotalker-bot/clients/cotalker"
+	"sariego.dev/cotalker-bot/services/meet"
 )
 
 func main() {
-	receive(func(msg, ch string) {
-		cmd := strings.Split(msg, " ")
+	client := cotalker.Client{}
+
+	client.Receive(func(pkg base.Package) {
+		cmd := strings.Split(pkg.Message, " ")
 		if cmd[0][0] == '!' {
+			out := base.Package{Channel: pkg.Channel}
 			switch cmd[0][1:] {
 			case "ping":
-				log.Printf("exec: PING@%v\n", ch)
-				send(ch, "pong!")
+				log.Printf("exec: PING@%v\n", pkg.Channel)
+				out.Message = "pong!"
 			case "meet":
-				log.Printf("exec: MEET@%v\n", ch)
-				send(ch, handlers.Meet())
+				log.Printf("exec: MEET@%v\n", pkg.Channel)
+				out.Message = meet.Respond()
 			}
+			client.Send(out)
 		}
 	})
 }
