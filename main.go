@@ -24,7 +24,9 @@ func main() {
 				log.Printf("exec: MEET@%v\n", pkg.Channel)
 				out.Message = meet.Respond()
 			}
-			client.Send(out)
+			if out.Message != "" {
+				client.Send(out)
+			}
 		}
 	})
 }
