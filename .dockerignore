@@ -5,6 +5,7 @@
 .gitignore
 .dockerignore
 docker-compose.yml
+dev.Dockerfile
 Dockerfile
 Procfile
 db

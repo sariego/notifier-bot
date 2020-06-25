@@ -1,0 +1,15 @@
+version: '3'
+services:
+  worker:
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    env_file: .env.dev
+    volumes:
+      - .:/app
+  database:
+    image: postgres:alpine
+    environment: 
+      - POSTGRES_PASSWORD
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
