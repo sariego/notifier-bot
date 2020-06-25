@@ -153,13 +153,14 @@ func (c Client) Send(pkg base.Package) error {
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", "Bearer "+TOKEN)
 
-	resp, err := http.DefaultClient.Do(req)
+	// fmt.Printf("req: %+v\n", req)
+	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Println("error@http_send:", err)
 		return err
 	}
-	defer resp.Body.Close()
-	// fmt.Printf("res: %+v\n", resp)
+	defer res.Body.Close()
+	// fmt.Printf("res: %+v\n", res)
 
 	return nil
 }
@@ -167,10 +168,10 @@ func (c Client) Send(pkg base.Package) error {
 func generateCotalkerUUID() string {
 	now := time.Now().Unix()
 	rand.Seed(now)
-	p0 := fmt.Sprintf("06%x", now)
+	p0 := fmt.Sprintf("%08x", now)
 	p1 := USERID[4:8] + USERID[18:20]
 	p2 := USERID[20:24]
-	p3 := fmt.Sprintf("06%x", rand.Intn(16777216)) // 16^6
+	p3 := fmt.Sprintf("%06x", rand.Intn(16777216)) // 16^6
 
 	return p0 + p1 + p2 + p3
 }
