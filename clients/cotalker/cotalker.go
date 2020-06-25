@@ -58,7 +58,10 @@ type command struct {
 func (c Client) Receive(handler func(pkg base.Package)) error {
 	log.Println("starting client...")
 
-	url, _ := url.Parse(HOST + "/socket.io-client/")
+	url, err := url.Parse(HOST + "/socket.io-client/")
+	if err != nil {
+		log.Fatalln("error@parse_url:", err)
+	}
 	header := http.Header{
 		"Authorization": []string{"Bearer " + TOKEN},
 	}
