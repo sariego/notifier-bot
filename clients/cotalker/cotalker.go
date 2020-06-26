@@ -3,6 +3,7 @@ package cotalker
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -156,16 +157,27 @@ func (c Client) Send(pkg base.Package) error {
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", "Bearer "+TOKEN)
 
-	// fmt.Printf("req: %+v\n", req)
+	if err != nil {
+		log.Println("error@new_request:", err)
+		return err
+	}
+
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Println("error@http_send:", err)
 		return err
 	}
 	defer res.Body.Close()
+
+	// fmt.Printf("req: %+v\n", req)
 	// fmt.Printf("res: %+v\n", res)
 
 	return nil
+}
+
+// GetChannelInfo - get info from cotalker api v2, cache for a day
+func (c Client) GetChannelInfo(id string) (base.ChannelInfo, error) {
+	return base.ChannelInfo{}, errors.New("not implemented")
 }
 
 func generateCotalkerUUID() string {
