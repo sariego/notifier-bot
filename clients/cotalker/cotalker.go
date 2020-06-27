@@ -22,11 +22,11 @@ import (
 )
 
 var (
-	// HOST cotalker server url
+	// HOST - cotalker server url
 	HOST string = os.Getenv("COTALKER_HOST")
-	// USERID cotalker bot user id
+	// USERID - cotalker bot user id
 	USERID string = os.Getenv("COTALKER_BOT_ID")
-	// TOKEN cotalker bot token
+	// TOKEN - cotalker bot token
 	TOKEN string = os.Getenv("COTALKER_BOT_TOKEN")
 )
 
@@ -56,7 +56,7 @@ type command struct {
 }
 
 // Receive - listens to socket and handles package via handler func
-func (c Client) Receive(handler func(pkg base.Package)) error {
+func (c *Client) Receive(handler base.PackageHandler) error {
 	log.Println("starting client...")
 
 	url, err := url.Parse(HOST + "/socket.io-client/")
@@ -125,12 +125,12 @@ func (c Client) Receive(handler func(pkg base.Package)) error {
 			Channel: ch,
 			Message: msg,
 		}
-		handler(pkg)
+		handler.Handle(pkg)
 	}
 }
 
 // Send - sends message via apiv1 /multi endpoing
-func (c Client) Send(pkg base.Package) error {
+func (c *Client) Send(pkg base.Package) error {
 	cmd := command{
 		Method: "POST",
 		Message: message{
@@ -176,7 +176,7 @@ func (c Client) Send(pkg base.Package) error {
 }
 
 // GetChannelInfo - get info from cotalker api v2, cache for a day
-func (c Client) GetChannelInfo(id string) (base.ChannelInfo, error) {
+func (c *Client) GetChannelInfo(id string) (base.ChannelInfo, error) {
 	return base.ChannelInfo{}, errors.New("not implemented")
 }
 
