@@ -1,11 +1,15 @@
 package base
 
 // Client - base client
-// Receive and Send are needed for basic functionality
 type Client interface {
-	Receive(handler func(pkg Package)) error
+	Receive(handler PackageHandler) error
 	Send(pkg Package) error
 	GetChannelInfo(id string) (ChannelInfo, error)
+}
+
+// PackageHandler - handles individual packages
+type PackageHandler interface {
+	Handle(pkg Package) error
 }
 
 // Package - unit of communication between bot and client
