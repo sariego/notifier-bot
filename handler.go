@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"sariego.dev/cotalker-bot/base"
+	"sariego.dev/cotalker-bot/services/identity"
 	"sariego.dev/cotalker-bot/services/meet"
 )
 
@@ -60,6 +61,12 @@ func execute(parsed instruction) (response string, err error) {
 	switch parsed.cmd {
 	case "ping":
 		response = "pong!"
+	case "register", "add":
+		response, err = identity.Register(
+			parsed.args[0],
+			parsed.pkg.Author,
+			parsed.pkg.Channel,
+		)
 	case "meet":
 		response = meet.Respond()
 	}
