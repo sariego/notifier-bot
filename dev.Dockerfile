@@ -3,4 +3,4 @@ RUN mkdir /app
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
-CMD ["go", "run", "."]
+CMD ["go", "run", ".", "receive"]

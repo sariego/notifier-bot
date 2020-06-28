@@ -1,6 +1,5 @@
 .DS_Store
 .env
-.env.dev
 .git
 .gitignore
 .dockerignore
