@@ -3,7 +3,6 @@ package cotalker
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -30,30 +29,10 @@ var (
 	TOKEN string = os.Getenv("COTALKER_BOT_TOKEN")
 )
 
-// Client - cotalker v1 implementation (receive:socket|send:apiv1)
+// Client - cotalker v1 implementation
+// uses socket.io to listen on channels
+// and api v1 to send messages and fetch data
 type Client struct{}
-
-type message struct {
-	ID          string `json:"_id"`
-	Content     string `json:"content"`
-	ContentType string `json:"contentType"`
-	Status      int    `json:"isSaved"`
-	Channel     string `json:"channel"`
-	Author      string `json:"sentBy"`
-}
-
-type envelope struct {
-	Model   string    `json:"model"`
-	Type    string    `json:"type"`
-	Count   int       `json:"count"`
-	Content []message `json:"content"`
-	Channel []string  `json:"channel"`
-}
-
-type command struct {
-	Method  string  `json:"method"`
-	Message message `json:"message"`
-}
 
 // Receive - listens to socket and handles package via handler func
 func (c *Client) Receive(handler base.PackageHandler) error {
@@ -154,14 +133,13 @@ func (c *Client) Send(pkg base.Package) error {
 	}
 	log.Printf("send: \"%v\"@%v\n", pkg.Message, pkg.Channel)
 	req, err := http.NewRequest(http.MethodPost, HOST+"/api/messages/multi", bytes.NewBuffer(json))
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Bearer "+TOKEN)
-
 	if err != nil {
 		log.Println("error@new_request:", err)
 		return err
 	}
 
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+TOKEN)
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Println("error@http_send:", err)
@@ -177,9 +155,58 @@ func (c *Client) Send(pkg base.Package) error {
 
 // GetChannelInfo - get info from cotalker api v2, cache for a day
 func (c *Client) GetChannelInfo(id string) (base.ChannelInfo, error) {
-	return base.ChannelInfo{}, errors.New("not implemented")
+	req, err := http.NewRequest(http.MethodGet, HOST+"/api/channels"+id, nil)
+	if err != nil {
+		log.Println("error@new_request:", err)
+		return base.ChannelInfo{}, err
+	}
+	req.Header.Set("Authorization", "Bearer "+TOKEN)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Println("error@http_get:", err)
+		return base.ChannelInfo{}, err
+	}
+	defer res.Body.Close()
+
+	var ch channel
+	err = json.NewDecoder(res.Body).Decode(&ch)
+	if err != nil {
+		log.Println("error@decode_res:", err)
+		return base.ChannelInfo{}, err
+	}
+
+	return base.ChannelInfo(ch), nil
 }
 
+type message struct {
+	ID          string `json:"_id"`
+	Content     string `json:"content"`
+	ContentType string `json:"contentType"`
+	Status      int    `json:"isSaved"`
+	Channel     string `json:"channel"`
+	Author      string `json:"sentBy"`
+}
+
+type envelope struct {
+	Model   string    `json:"model"`
+	Type    string    `json:"type"`
+	Count   int       `json:"count"`
+	Content []message `json:"content"`
+	Channel []string  `json:"channel"`
+}
+
+type command struct {
+	Method  string  `json:"method"`
+	Message message `json:"message"`
+}
+
+type channel struct {
+	ID           string   `json:"_id"`
+	Name         string   `json:"nameDisplay"`
+	Participants []string `json:"userIds"`
+}
+
+// generates compliant cotalker uuid
 func generateCotalkerUUID() string {
 	now := time.Now().Unix()
 	rand.Seed(now)

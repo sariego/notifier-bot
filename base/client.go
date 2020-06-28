@@ -20,7 +20,6 @@ type Package struct {
 }
 
 // ChannelInfo - public channel information
-// will retain in cache for a day
 type ChannelInfo struct {
 	ID           string
 	Name         string
