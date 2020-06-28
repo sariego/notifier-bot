@@ -3,6 +3,7 @@ package identity
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/lib/pq"
 	"sariego.dev/cotalker-bot/services/data"
@@ -39,3 +40,46 @@ func Register(username, userID, channelID string) (string, error) {
 	return "debes ingresar un nombre de usuario", nil
 }
 
+// Deregister - removes identity from registry
+func Deregister(username, userID string) (string, error) {
+	result, err := data.DB.Exec(
+		"delete from identity where username = $1 AND user_id = $2",
+		username, userID,
+	)
+	if n, _ := result.RowsAffected(); err != nil || n == 0 {
+		return "", err
+	}
+	return fmt.Sprintf(
+		"listo @%v, no te enviaré mas mensajes",
+		username,
+	), nil
+}
+
+// WhoAmI - prints user identities
+func WhoAmI(id string) (string, error) {
+	var names []string
+	rows, err := data.DB.Query(
+		"select username from identity where user_id = $1",
+		id,
+	)
+	if err != nil {
+		return "", err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var username string
+		err := rows.Scan(&username)
+		if err != nil {
+			log.Println("error@identity_scan: ", err)
+			return "", err
+		}
+		names = append(names, "@"+username)
+	}
+
+	if len(names) > 0 {
+		return strings.Join(names, " "), nil
+	}
+	return "no se quién eres :c\n" +
+		"usa !register [username] en una conversacion\n" +
+		"privada conmigo para registrarte", nil
+}

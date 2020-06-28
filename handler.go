@@ -67,6 +67,13 @@ func execute(parsed instruction) (response string, err error) {
 			parsed.pkg.Author,
 			parsed.pkg.Channel,
 		)
+	case "deregister", "remove", "delete":
+		response, err = identity.Deregister(
+			parsed.args[0],
+			parsed.pkg.Author,
+		)
+	case "whoami":
+		response, err = identity.WhoAmI(parsed.pkg.Author)
 	case "meet":
 		response = meet.Respond()
 	}
