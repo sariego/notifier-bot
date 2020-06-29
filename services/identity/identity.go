@@ -67,33 +67,56 @@ func Deregister(username, userID string) (string, error) {
 	), nil
 }
 
-// WhoAmI - prints user identities
+// WhoAmI - prints caller user identities
 func WhoAmI(id string) (string, error) {
-	var names []string
-	rows, err := data.DB.Query(
+	return formatNames(
 		"select username from identity where user_id = $1",
 		id,
+		"no se quién eres :c\n"+
+			"usa !register [username] en una conversacion\n"+
+			"privada conmigo para registrarte",
 	)
+}
+
+// WhoIsHere - prints user identities in current channel
+func (d Driver) WhoIsHere(id string) (string, error) {
+	info, _ := d.Client.GetChannelInfo(id)
+
+	return formatNames(
+		"select distinct on(user_id) username from identity where user_id = any($1)",
+		pq.Array(info.Participants),
+		"no conozco a nadie acá :c",
+	)
+}
+
+// scans and format names into a response, fallbacks if empty
+func formatNames(query string, target interface{}, fallback string) (string, error) {
+	names, _ := scanNames(query, target)
+	if len(names) > 0 {
+		return strings.Join(names, " "), nil
+	}
+	return fallback, nil
+}
+
+// return list of @ selectors of user or channel
+func scanNames(query string, target interface{}) (names []string, err error) {
+	rows, err := data.DB.Query(query, target)
 	if err != nil {
-		return "", err
+		return
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var username string
-		err := rows.Scan(&username)
+		err = rows.Scan(&username)
 		if err != nil {
 			log.Println("error@identity_scan: ", err)
-			return "", err
+			return
 		}
 		names = append(names, "@"+username)
 	}
+	return
+}
 
-	if len(names) > 0 {
-		return strings.Join(names, " "), nil
-	}
-	return "no se quién eres :c\n" +
-		"usa !register [username] en una conversacion\n" +
-		"privada conmigo para registrarte", nil
 // returns true if channel has only one participant other than the bot
 func (d Driver) isChannelValid(id string) bool {
 	info, _ := d.Client.GetChannelInfo(id)

@@ -76,9 +76,11 @@ func execute(parsed instruction) (response string, err error) {
 		)
 	case "whoami":
 		response, err = identity.WhoAmI(parsed.pkg.Author)
+	case "whoishere":
+		response, err = identity.Driver{Client: parsed.client}.
+			WhoIsHere(parsed.pkg.Channel)
 	case "meet":
 		response = meet.Respond()
 	}
 	return
 }
-
