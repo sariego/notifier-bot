@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"sariego.dev/cotalker-bot/base"
+	"sariego.dev/cotalker-bot/services/feedback"
 	"sariego.dev/cotalker-bot/services/identity"
 	"sariego.dev/cotalker-bot/services/meet"
 )
@@ -81,6 +82,13 @@ func execute(parsed instruction) (response string, err error) {
 			WhoIsHere(parsed.pkg.Channel)
 	case "meet":
 		response = meet.Respond()
+	case "feedback", "bug":
+		response, err = feedback.Create(
+			parsed.pkg.Author,
+			parsed.pkg.Channel,
+			parsed.cmd,
+			strings.Join(parsed.args, " "),
+		)
 	}
 	return
 }

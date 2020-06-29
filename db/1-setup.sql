@@ -14,6 +14,7 @@ create table if not exists "feedback" (
   "id"          uuid primary key default uuid_generate_v4(),
   "user_id"     varchar not null,
   "channel_id"  varchar not null,
+  "tag"         text,
   "content"     text,
   "created"     timestamptz not null default now()
 );
