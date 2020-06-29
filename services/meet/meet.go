@@ -5,21 +5,51 @@ import (
 	"io/ioutil"
 	"log"
 	"strings"
+
+	"sariego.dev/cotalker-bot/base"
+	"sariego.dev/cotalker-bot/services/identity"
 )
+
+// Driver [Meet] - send meeting links
+type Driver struct {
+	Client base.Client
+}
 
 // meet code pool
 var codes = initCodes()
 var cursor = 0
 
-// Respond - generates complete message with meet url
-func Respond() string {
+// NewMeeting - generates message with meet url
+// and notifies @ mentions
+func (d Driver) NewMeeting(pkg base.Package) string {
+	code := codes[cursor]
+	cursor = (cursor + 1) % len(codes)
 	msg := fmt.Sprintf(
 		"meet.google.com/%v\nhttps://meet.google.com/%v",
-		codes[cursor],
-		codes[cursor],
+		code, code,
 	)
-	cursor = (cursor + 1) % len(codes)
+
+	// notify @ mentions
+	channels, _ := identity.Driver{Client: d.Client}.
+		GetNotifyChannels(pkg)
+	sender := identity.GetSenderName(pkg.Author)
+	go d.notify(channels, sender, msg)
+
 	return msg
+}
+
+func (d Driver) notify(channels []string, sender, msg string) {
+	for _, ch := range channels {
+		notif := fmt.Sprintf(
+			"%v quiere hablar contigo\n%v",
+			sender, msg,
+		)
+		out := base.Package{
+			Channel: ch,
+			Message: notif,
+		}
+		d.Client.Send(out)
+	}
 }
 
 func initCodes() []string {
