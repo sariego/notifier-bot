@@ -6,7 +6,7 @@ type Client interface {
 	Send(pkg Package) error
 	GetChannelInfo(id string) (ChannelInfo, error)
 	BotID() string
-	// add if handles mentions? maybe user config instead?
+	MentionsRedirectURL() string
 }
 
 // PackageHandler - handles individual packages

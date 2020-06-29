@@ -23,6 +23,8 @@ import (
 var (
 	// HOST - cotalker server url
 	HOST string = os.Getenv("COTALKER_HOST")
+	// WEB - webclient url
+	WEB string = os.Getenv("COTALKER_WEB_CLIENT")
 	// USERID - cotalker bot user id
 	USERID string = os.Getenv("COTALKER_BOT_ID")
 	// TOKEN - cotalker bot token
@@ -37,6 +39,12 @@ type Client struct{}
 // BotID - returns userid of the bot
 func (c *Client) BotID() string {
 	return USERID
+}
+
+// MentionsRedirectURL - returns link to send users when @ mentioned
+// leave empty to disable mentions tracking
+func (c *Client) MentionsRedirectURL() string {
+	return WEB + "/c/g/summary?channel=%v"
 }
 
 // Receive - listens to socket and handles package via handler func

@@ -43,6 +43,9 @@ func (h *pkgHandler) Handle(pkg base.Package) error {
 			}
 			h.client.Send(output)
 		}
+	} else {
+		// notify mentions
+		go identity.Driver{Client: h.client}.NotifyMentions(pkg)
 	}
 	return nil
 }

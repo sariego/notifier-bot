@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/lib/pq"
 	"sariego.dev/cotalker-bot/base"
@@ -34,7 +35,7 @@ func (d Driver) Register(username, userID, channelID string) (string, error) {
 			username, userID, channelID,
 		)
 		if err != nil {
-			log.Println("error@register: ", err)
+			log.Println("error@register:", err)
 			// let user know if name is already registered
 			if err, ok := err.(*pq.Error); ok &&
 				err.Code.Name() == "unique_violation" {
@@ -89,6 +90,71 @@ func (d Driver) WhoIsHere(id string) (string, error) {
 	)
 }
 
+// NotifyMentions - notifies @ mentions in channels where user is in
+func (d Driver) NotifyMentions(pkg base.Package) error {
+	info, _ := d.Client.GetChannelInfo(pkg.Channel)
+	names, _ := scanNames(
+		"select username from identity where user_id = any($1)",
+		pq.Array(info.Participants),
+	)
+	args := strings.Split(pkg.Message, " ")
+	// fmt.Println("names:", names)
+	// fmt.Println("args:", args)
+
+	rows, err := data.DB.Query(
+		"select channel_id from identity where '@'||username = any($1) and '@'||username = any($2)",
+		pq.Array(names), pq.Array(args),
+	)
+	if err != nil {
+		log.Println("error@notify_get_channels:", err)
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var ch string
+		err := rows.Scan(&ch)
+		if err != nil {
+			log.Println("error@notify_each_channel:", err)
+			continue
+		}
+		log.Printf("exec: notify@%v\n", ch)
+
+		// generate notification message
+		var sender string
+		_ = data.DB.QueryRow(
+			"select username from identity where user_id = $1",
+			pkg.Author,
+		).Scan(&sender)
+		if len(sender) == 0 {
+			sender = "alguien"
+		} else {
+			sender = "@" + sender
+		}
+
+		summary := base.Package{
+			Channel: ch,
+			Message: fmt.Sprintf(
+				"%v te ha etiquetado en %v\n%v",
+				sender,
+				info.Name,
+				fmt.Sprintf(d.Client.MentionsRedirectURL(), ch),
+			),
+		}
+		message := base.Package{
+			Channel: ch,
+			Message: fmt.Sprintf(
+				"el mensaje fué:\n%v",
+				pkg.Message,
+			),
+		}
+		d.Client.Send(summary)
+		time.Sleep(500 * time.Millisecond)
+		d.Client.Send(message)
+	}
+
+	return nil
+}
+
 // scans and format names into a response, fallbacks if empty
 func formatNames(query string, target interface{}, fallback string) (string, error) {
 	names, _ := scanNames(query, target)
@@ -109,7 +175,7 @@ func scanNames(query string, target interface{}) (names []string, err error) {
 		var username string
 		err = rows.Scan(&username)
 		if err != nil {
-			log.Println("error@identity_scan: ", err)
+			log.Println("error@identity_scan:", err)
 			return
 		}
 		names = append(names, "@"+username)
