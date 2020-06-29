@@ -34,6 +34,11 @@ var (
 // and api v1 to send messages and fetch data
 type Client struct{}
 
+// BotID - returns userid of the bot
+func (c *Client) BotID() string {
+	return USERID
+}
+
 // Receive - listens to socket and handles package via handler func
 func (c *Client) Receive(handler base.PackageHandler) error {
 	log.Println("starting client...")
@@ -153,9 +158,9 @@ func (c *Client) Send(pkg base.Package) error {
 	return nil
 }
 
-// GetChannelInfo - get info from cotalker api v2, cache for a day
+// GetChannelInfo - get info from cotalker api
 func (c *Client) GetChannelInfo(id string) (base.ChannelInfo, error) {
-	req, err := http.NewRequest(http.MethodGet, HOST+"/api/channels"+id, nil)
+	req, err := http.NewRequest(http.MethodGet, HOST+"/api/channels/"+id, nil)
 	if err != nil {
 		log.Println("error@new_request:", err)
 		return base.ChannelInfo{}, err
