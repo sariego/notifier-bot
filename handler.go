@@ -43,10 +43,11 @@ func (h *pkgHandler) Handle(pkg base.Package) error {
 			}
 			h.client.Send(output)
 		}
-	} else {
+	} else if len(h.client.MentionsRedirectURL()) > 0 {
 		// notify mentions
 		go identity.Driver{Client: h.client}.NotifyMentions(pkg)
 	}
+
 	return nil
 }
 
