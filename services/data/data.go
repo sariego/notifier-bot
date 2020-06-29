@@ -44,7 +44,7 @@ func (cc CachedClient) GetChannelInfo(id string) (base.ChannelInfo, error) {
 			return cached, nil
 		}
 		// save to cache and return fresh
-		// todo save to cache
+		cc.cache.saveChannelInfo(fresh)
 		return fresh, err
 	}
 	// cache hit!
@@ -71,3 +71,13 @@ func (cache) getChannelInfo(id string) (base.ChannelInfo, error) {
 	return info, err
 }
 
+func (cache) saveChannelInfo(info base.ChannelInfo) error {
+	_, err := DB.Exec("insert into channel_info(channel_id, name, users) "+
+		"values($1,$2,$3) "+
+		"on conflict(channel_id) do update "+
+		"set name = excluded.name, users = excluded.users",
+		info.ID, info.Name, pq.Array(info.Participants),
+	)
+
+	return err
+}
