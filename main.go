@@ -6,6 +6,7 @@ import (
 
 	"sariego.dev/cotalker-bot/base"
 	"sariego.dev/cotalker-bot/clients/cotalker"
+	"sariego.dev/cotalker-bot/services/data"
 )
 
 const (
@@ -19,7 +20,7 @@ const (
 
 func main() {
 	var client base.Client
-	client = &cotalker.Client{} // todo add other clients
+	client = data.NewCachedClient(&cotalker.Client{}) // todo add other clients
 	handler := &pkgHandler{client}
 
 	switch os.Args[1] {

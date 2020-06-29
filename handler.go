@@ -29,7 +29,7 @@ func (h *pkgHandler) Handle(pkg base.Package) error {
 	if split[0][0] == '!' {
 		log.Println("match: detected ! format")
 		cmd := split[0][1:]
-		msg, err := execute(instruction{pkg, cmd, split[1:]})
+		msg, err := execute(instruction{h.client, pkg, cmd, split[1:]})
 		if err != nil {
 			return err
 		}
@@ -47,9 +47,10 @@ func (h *pkgHandler) Handle(pkg base.Package) error {
 }
 
 type instruction struct {
-	pkg  base.Package
-	cmd  string
-	args []string
+	client base.Client
+	pkg    base.Package
+	cmd    string
+	args   []string
 }
 
 // todo markdown responses

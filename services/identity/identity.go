@@ -6,8 +6,14 @@ import (
 	"strings"
 
 	"github.com/lib/pq"
+	"sariego.dev/cotalker-bot/base"
 	"sariego.dev/cotalker-bot/services/data"
 )
+
+// Driver [Identity] - manages user identities
+type Driver struct {
+	Client base.Client
+}
 
 // Register - add new identity to registry
 func Register(username, userID, channelID string) (string, error) {
@@ -82,4 +88,12 @@ func WhoAmI(id string) (string, error) {
 	return "no se quién eres :c\n" +
 		"usa !register [username] en una conversacion\n" +
 		"privada conmigo para registrarte", nil
+// returns true if channel has only one participant other than the bot
+func (d Driver) isChannelValid(id string) bool {
+	info, _ := d.Client.GetChannelInfo(id)
+	p := info.Participants
+	bid := d.Client.BotID()
+
+	return len(p) == 2 &&
+		(p[0] == bid || p[1] == bid)
 }
