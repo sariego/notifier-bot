@@ -75,7 +75,8 @@ func (cache) saveChannelInfo(info base.ChannelInfo) error {
 	_, err := DB.Exec("insert into channel_info(channel_id, name, users) "+
 		"values($1,$2,$3) "+
 		"on conflict(channel_id) do update "+
-		"set name = excluded.name, users = excluded.users",
+		"set name = excluded.name, users = excluded.users, "+
+		"updated = default, expired = default",
 		info.ID, info.Name, pq.Array(info.Participants),
 	)
 
