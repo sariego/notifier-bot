@@ -16,8 +16,14 @@ type Driver struct {
 }
 
 // Register - add new identity to registry
-func Register(username, userID, channelID string) (string, error) {
-	// todo check is private channel
+func (d Driver) Register(username, userID, channelID string) (string, error) {
+	// check if in private channel
+	if !d.isChannelValid(channelID) {
+		return "error :c\n" +
+			"sólo puedo registrate en un canal directo,\n" +
+			"prueba en una conversación privada conmigo", nil
+	}
+	// reject empty name
 	if len(username) > 0 {
 		// clean name of initial @ to avoid confusion
 		for username[0] == '@' {

@@ -63,11 +63,12 @@ func execute(parsed instruction) (response string, err error) {
 	case "ping":
 		response = "pong!"
 	case "register", "add":
-		response, err = identity.Register(
-			parsed.args[0],
-			parsed.pkg.Author,
-			parsed.pkg.Channel,
-		)
+		response, err = identity.Driver{Client: parsed.client}.
+			Register(
+				parsed.args[0],
+				parsed.pkg.Author,
+				parsed.pkg.Channel,
+			)
 	case "deregister", "remove", "delete":
 		response, err = identity.Deregister(
 			parsed.args[0],
