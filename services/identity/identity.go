@@ -162,7 +162,7 @@ func (d Driver) GetNotifyChannels(pkg base.Package) (channels []string, err erro
 // GetSenderName - returns username if known, fallback to 'alguien'
 func GetSenderName(id string) (sender string) {
 	_ = data.DB.QueryRow(
-		"select username from identity where user_id = $1",
+		"select username from identity where user_id = $1 order by created",
 		id,
 	).Scan(&sender)
 	if len(sender) == 0 {
