@@ -16,6 +16,11 @@ type pkgHandler struct {
 }
 
 func (h *pkgHandler) Handle(pkg base.Package) error {
+	// ignore own messages
+	if pkg.Author == h.client.BotID() {
+		return nil
+	}
+
 	split := strings.Split(pkg.Message, " ")
 
 	// handle @<BOTNAME> <CMD> <ARGS>...
