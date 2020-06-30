@@ -20,7 +20,7 @@ func (d Driver) Register(username, userID, channelID string) (string, error) {
 	// check if in private channel
 	if !d.isChannelValid(channelID) {
 		return "error :c\n" +
-			"sólo puedo registrate en un canal directo,\n" +
+			"solo puedo registrate en un canal directo,\n" +
 			"prueba en una conversación privada conmigo", nil
 	}
 	// reject empty name
@@ -73,7 +73,7 @@ func WhoAmI(id string) (string, error) {
 		"select username from identity where user_id = $1",
 		id,
 		"no se quién eres :c\n"+
-			"usa !register [username] en una conversacion\n"+
+			"usa !register [username] en una conversación\n"+
 			"privada conmigo para registrarte",
 	)
 }
