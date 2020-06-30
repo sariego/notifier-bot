@@ -44,7 +44,7 @@ func (h *pkgHandler) Handle(pkg base.Package) error {
 			}
 			h.client.Send(output)
 		}
-	} else if len(h.client.MentionsRedirectURL()) > 0 {
+	} else if hasMentionsSupport(h.client) {
 		// notify mentions
 		go identity.Driver{Client: h.client}.NotifyMentions(pkg)
 	}
@@ -101,4 +101,8 @@ func execute(parsed instruction) (response string, err error) {
 		response = fmt.Sprintf("cotalker-bot %v", VERSION)
 	}
 	return
+}
+
+func hasMentionsSupport(c base.Client) bool {
+	return len(c.MentionsRedirectURL()) > 0
 }
