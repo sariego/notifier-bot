@@ -70,7 +70,7 @@ func Deregister(username, userID string) (string, error) {
 // WhoAmI - prints caller user identities
 func WhoAmI(id string) (string, error) {
 	return formatNames(
-		"select username from identity where user_id = $1",
+		"select username from identity where user_id = $1 order by created",
 		id,
 		"no se quién eres :c\n"+
 			"usa !register [username] en una conversación\n"+
@@ -84,7 +84,7 @@ func (d Driver) WhoIsHere(id string) (string, error) {
 
 	return formatNames(
 		"select distinct on(user_id) username from identity "+
-			"where user_id = any($1) order by created",
+			"where user_id = any($1) order by user_id, created",
 		pq.Array(info.Participants),
 		"no conozco a nadie acá :c",
 	)
