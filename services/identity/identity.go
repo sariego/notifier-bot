@@ -94,13 +94,15 @@ func (d Driver) WhoIsHere(id string) (string, error) {
 // NotifyMentions - notifies @ mentions in channels where user is in
 func (d Driver) NotifyMentions(pkg base.Package) error {
 	info, _ := d.Client.GetChannelInfo(pkg.Channel)
-	channels, err := d.GetNotifyChannels(pkg)
+
+	// do NOT use GetNotifyChannels, we want participants only
+	channels, err := d.getNotifyChannelsForParticipantsOnly(pkg)
 	if err != nil {
 		return err
 	}
 
 	for _, ch := range channels {
-		log.Printf("exec: notify@%v\n", ch)
+		log.Printf("exec: notify_mention@%v\n", ch)
 
 		// generate notification message
 		sender := GetSenderName(pkg.Author)
@@ -128,23 +130,14 @@ func (d Driver) NotifyMentions(pkg base.Package) error {
 	return nil
 }
 
-// GetNotifyChannels - returns channels to notify
-func (d Driver) GetNotifyChannels(pkg base.Package) (channels []string, err error) {
-	info, _ := d.Client.GetChannelInfo(pkg.Channel)
-	names, _ := scanNames(
-		"select username from identity where user_id = any($1)",
-		pq.Array(info.Participants),
-	)
-	args := strings.Split(pkg.Message, " ")
-	// fmt.Println("names:", names)
-	// fmt.Println("args:", args)
-
+// GetNotifyChannels - returns channels to notify from @ mentions in args
+func GetNotifyChannels(args []string) (channels []string, err error) {
 	rows, err := data.DB.Query(
-		"select distinct channel_id from identity where '@'||username = any($1) and '@'||username = any($2)",
-		pq.Array(names), pq.Array(args),
+		"select distinct channel_id from identity where '@'||username = any($1)",
+		pq.Array(args),
 	)
 	if err != nil {
-		log.Println("error@notify_get_channels:", err)
+		log.Println("error@get_notify_channels_all:", err)
 		return
 	}
 	defer rows.Close()
@@ -152,7 +145,7 @@ func (d Driver) GetNotifyChannels(pkg base.Package) (channels []string, err erro
 		var ch string
 		err := rows.Scan(&ch)
 		if err != nil {
-			log.Println("error@notify_each_channel:", err)
+			log.Println("error@get_notify_channels_each:", err)
 			continue
 		}
 		channels = append(channels, ch)
@@ -170,6 +163,38 @@ func GetSenderName(id string) (sender string) {
 		sender = "alguien"
 	} else {
 		sender = "@" + sender
+	}
+	return
+}
+
+// similar to GetNotifyChannels but filter users not in pkg.Channel
+func (d Driver) getNotifyChannelsForParticipantsOnly(pkg base.Package) (channels []string, err error) {
+	info, _ := d.Client.GetChannelInfo(pkg.Channel)
+	names, _ := scanNames(
+		"select username from identity where user_id = any($1)",
+		pq.Array(info.Participants),
+	)
+	args := strings.Split(pkg.Message, " ")
+	// fmt.Println("names:", names)
+	// fmt.Println("args:", args)
+
+	rows, err := data.DB.Query(
+		"select distinct channel_id from identity where '@'||username = any($1) and '@'||username = any($2)",
+		pq.Array(names), pq.Array(args),
+	)
+	if err != nil {
+		log.Println("error@get_notify_participants_all:", err)
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var ch string
+		err := rows.Scan(&ch)
+		if err != nil {
+			log.Println("error@get_notify_participants_each:", err)
+			continue
+		}
+		channels = append(channels, ch)
 	}
 	return
 }

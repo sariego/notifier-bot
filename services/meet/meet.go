@@ -21,7 +21,7 @@ var cursor = 0
 
 // NewMeeting - generates message with meet url
 // and notifies @ mentions
-func (d Driver) NewMeeting(pkg base.Package) string {
+func (d Driver) NewMeeting(senderID string, args []string) string {
 	code := codes[cursor]
 	cursor = (cursor + 1) % len(codes)
 	msg := fmt.Sprintf(
@@ -30,9 +30,8 @@ func (d Driver) NewMeeting(pkg base.Package) string {
 	)
 
 	// notify @ mentions
-	channels, _ := identity.Driver{Client: d.Client}.
-		GetNotifyChannels(pkg)
-	sender := identity.GetSenderName(pkg.Author)
+	channels, _ := identity.GetNotifyChannels(args)
+	sender := identity.GetSenderName(senderID)
 	go d.notify(channels, sender, msg)
 
 	return msg
@@ -40,6 +39,7 @@ func (d Driver) NewMeeting(pkg base.Package) string {
 
 func (d Driver) notify(channels []string, sender, msg string) {
 	for _, ch := range channels {
+		log.Printf("exec: notify_meet@%v\n", ch)
 		notif := fmt.Sprintf(
 			"%v quiere hablar contigo\n%v",
 			sender, msg,

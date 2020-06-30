@@ -92,7 +92,7 @@ func execute(parsed instruction) (response string, err error) {
 			WhoIsHere(parsed.pkg.Channel)
 	case "meet":
 		response = meet.Driver{Client: parsed.client}.
-			NewMeeting(parsed.pkg)
+			NewMeeting(parsed.pkg.Author, parsed.args)
 	case "feedback", "bug":
 		response, err = feedback.Create(
 			parsed.pkg.Author,
