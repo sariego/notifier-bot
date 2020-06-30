@@ -76,7 +76,7 @@ func (cache) saveChannelInfo(info base.ChannelInfo) error {
 		"values($1,$2,$3) "+
 		"on conflict(channel_id) do update "+
 		"set name = excluded.name, users = excluded.users, "+
-		"updated = default, expired = default",
+		"updated = default, expires = default",
 		info.ID, info.Name, pq.Array(info.Participants),
 	)
 
