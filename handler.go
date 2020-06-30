@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -96,6 +97,8 @@ func execute(parsed instruction) (response string, err error) {
 		)
 	case "help":
 		response = help
+	case "version":
+		response = fmt.Sprintf("cotalker-bot %v", VERSION)
 	}
 	return
 }
