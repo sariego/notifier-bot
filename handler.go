@@ -94,6 +94,8 @@ func execute(parsed instruction) (response string, err error) {
 			parsed.cmd,
 			strings.Join(parsed.args, " "),
 		)
+	case "help":
+		response = help
 	}
 	return
 }
