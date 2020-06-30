@@ -84,7 +84,8 @@ func (d Driver) WhoIsHere(id string) (string, error) {
 	info, _ := d.Client.GetChannelInfo(id)
 
 	return formatNames(
-		"select distinct on(user_id) username from identity where user_id = any($1)",
+		"select distinct on(user_id) username from identity "+
+			"where user_id = any($1) order by created",
 		pq.Array(info.Participants),
 		"no conozco a nadie acá :c",
 	)
