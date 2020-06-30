@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"time"
 
 	"github.com/lib/pq"
 	"sariego.dev/cotalker-bot/base"
@@ -121,7 +120,7 @@ func (d Driver) NotifyMentions(pkg base.Package) error {
 			),
 		}
 		d.Client.Send(summary)
-		time.Sleep(500 * time.Millisecond)
+		// time.Sleep(500 * time.Millisecond)
 		d.Client.Send(message)
 	}
 
