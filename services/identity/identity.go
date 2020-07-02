@@ -96,7 +96,10 @@ func (d Driver) NotifyMentions(pkg base.Package) error {
 	info, _ := d.Client.GetChannelInfo(pkg.Channel)
 
 	// do NOT use GetNotifyChannels, we want participants only
-	channels, err := d.getNotifyChannelsForParticipantsOnly(pkg)
+	channels, err := d.getNotifyChannelsForParticipantsOnly(
+		pkg.Channel,
+		pkg.Message,
+	)
 	if err != nil {
 		return err
 	}
@@ -167,19 +170,23 @@ func GetSenderName(id string) (sender string) {
 	return
 }
 
-// similar to GetNotifyChannels but filter users not in pkg.Channel
-func (d Driver) getNotifyChannelsForParticipantsOnly(pkg base.Package) (channels []string, err error) {
-	info, _ := d.Client.GetChannelInfo(pkg.Channel)
+// similar to GetNotifyChannels but only for users in channel ch,
+// also matches symbols after username
+func (d Driver) getNotifyChannelsForParticipantsOnly(ch, msg string) (channels []string, err error) {
+	info, _ := d.Client.GetChannelInfo(ch)
 	names, _ := scanNames(
 		"select username from identity where user_id = any($1)",
 		pq.Array(info.Participants),
 	)
-	args := strings.Split(pkg.Message, " ")
+	args := strings.Split(msg, " ")
 	// fmt.Println("names:", names)
 	// fmt.Println("args:", args)
 
 	rows, err := data.DB.Query(
-		"select distinct channel_id from identity where '@'||username = any($1) and '@'||username = any($2)",
+		"select distinct channel_id from identity where '@'||username in("+
+			"select name from unnest($1::varchar[]) as u(name), "+
+			"unnest($2::varchar[]) as a(word) "+
+			"where word ~* ('^'||name||'[^\\w\\s]*$'))",
 		pq.Array(names), pq.Array(args),
 	)
 	if err != nil {
