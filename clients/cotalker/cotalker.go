@@ -117,7 +117,7 @@ func (c *Client) Receive(handler base.PackageHandler) error {
 			Channel: ch,
 			Message: msg,
 		}
-		handler.Handle(pkg)
+		go handler.Handle(pkg)
 	}
 }
 
@@ -219,11 +219,13 @@ type channel struct {
 	Participants []string `json:"userIds"`
 }
 
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
 // generates compliant cotalker uuid
 func generateCotalkerUUID() string {
-	now := time.Now().Unix()
-	rand.Seed(now)
-	p0 := fmt.Sprintf("%08x", now)
+	p0 := fmt.Sprintf("%08x", time.Now().Unix())
 	p1 := USERID[4:8] + USERID[18:20]
 	p2 := USERID[20:24]
 	p3 := fmt.Sprintf("%06x", rand.Intn(16777216)) // 16^6

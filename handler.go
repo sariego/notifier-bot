@@ -51,7 +51,7 @@ func (h *pkgHandler) Handle(pkg base.Package) error {
 		}
 	} else if hasMentionsSupport(h.client) {
 		// notify mentions
-		go identity.Driver{Client: h.client}.NotifyMentions(pkg)
+		identity.Driver{Client: h.client}.NotifyMentions(pkg)
 	}
 
 	return nil
