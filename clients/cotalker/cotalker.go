@@ -97,13 +97,10 @@ func (c *Client) Receive(handler base.PackageHandler) error {
 			log.Println("error@cmd_unmarshal:", err)
 		}
 
-		log.Printf(
-			"parsed: event:%v type:%v subject:%v\n",
-			args[0][1:len(args[0])],
-			args[1],
-			strings.Split(args[1][1:], "#")[0],
-		)
-		if strings.Split(args[1][1:], "#")[0] != "message" { // hacky hacky
+		ev := args[0][1 : len(args[0])-1]
+		ty := args[1][1 : len(args[1])-1]
+		log.Printf("parsed: event:%v type:%v\n", ev, ty)
+		if ty != "message#dataArray" {
 			continue
 		}
 
