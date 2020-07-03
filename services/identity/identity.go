@@ -108,24 +108,17 @@ func (d Driver) NotifyMentions(pkg base.Package) error {
 
 		// generate notification message
 		sender := GetSenderName(pkg.Author)
-		summary := base.Package{
+		out := base.Package{
 			Channel: ch,
 			Message: fmt.Sprintf(
-				"%v te ha etiquetado en %v\n%v",
+				"%v te ha etiquetado en %v\n\"%v\"\n\n%v",
 				sender,
 				info.Name,
+				pkg.Message,
 				fmt.Sprintf(d.Client.MentionsRedirectURL(), pkg.Channel),
 			),
 		}
-		message := base.Package{
-			Channel: ch,
-			Message: fmt.Sprintf(
-				"el mensaje fué:\n%v",
-				pkg.Message,
-			),
-		}
-		d.Client.Send(summary)
-		d.Client.Send(message)
+		d.Client.Send(out)
 	}
 
 	return nil

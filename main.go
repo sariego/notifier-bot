@@ -11,7 +11,7 @@ import (
 
 const (
 	// VERSION - program version
-	VERSION = "0.3.2"
+	VERSION = "0.3.2a"
 	// NAME - bot name
 	NAME = "JAIME"
 	// todo docopt
