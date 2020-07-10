@@ -106,7 +106,7 @@ func (c *Client) Receive(handler base.PackageHandler) error {
 
 		u := e.Content[0].Author
 		ch := e.Channel[0]
-		msg := e.Content[0].Content
+		msg := strings.TrimSpace(e.Content[0].Content)
 		log.Printf("read: \"%v\"@%v\n", msg, ch)
 
 		pkg := base.Package{
