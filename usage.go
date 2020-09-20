@@ -10,6 +10,10 @@ const help = `comandos disponibles:
 !whoishere				muestra nombres de usuarios 
 						registrados en el canal
 
+!subscribe TOPIC			suscribe temas para ser notificade
+!unsubscribe TOPIC		desuscribe temas para no ser notificade
+!subscriptions			muestra tu lista de suscripciones
+
 !meet [@USERNAMES...]	envía un link de meet, si especificas
 						usuarios estos serán notificados
 
@@ -18,5 +22,5 @@ const help = `comandos disponibles:
 
 !help					muestra este mensaje
 
-* !register y !deregister solo se pueden usar en una conversación privada
-* al registrarte recibirás en ese canal avisos sobre menciones de tu nombre`
+* !register y !subscribe solo se pueden usar en una conversación privada
+* al registrarte recibirás avisos en ese canal`

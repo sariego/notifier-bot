@@ -62,7 +62,7 @@ func Deregister(username, userID string) (string, error) {
 		return "", err
 	}
 	return fmt.Sprintf(
-		"listo @%v, no te enviaré mas mensajes",
+		"listo @%v, no te enviaré más mensajes",
 		username,
 	), nil
 }
