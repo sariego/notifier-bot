@@ -9,6 +9,7 @@ import (
 	"sariego.dev/cotalker-bot/services/feedback"
 	"sariego.dev/cotalker-bot/services/identity"
 	"sariego.dev/cotalker-bot/services/meet"
+	"sariego.dev/cotalker-bot/services/topics"
 )
 
 type pkgHandler struct {
@@ -52,6 +53,8 @@ func (h *pkgHandler) Handle(pkg base.Package) error {
 	} else if hasMentionsSupport(h.client) {
 		// notify mentions
 		identity.Driver{Client: h.client}.NotifyMentions(pkg)
+		// notify subscriptions
+		topics.Driver{Client: h.client}.NotifySubscriptions(pkg)
 	}
 
 	return nil
@@ -90,6 +93,20 @@ func execute(parsed instruction) (response string, err error) {
 	case "whoishere":
 		response, err = identity.Driver{Client: parsed.client}.
 			WhoIsHere(parsed.pkg.Channel)
+	case "subscribe", "sub":
+		response, err = topics.Driver{Client: parsed.client}.
+			Subscribe(
+				parsed.args[0],
+				parsed.pkg.Author,
+				parsed.pkg.Channel,
+			)
+	case "unsubscribe", "unsub":
+		response, err = topics.Unsubscribe(
+			parsed.args[0],
+			parsed.pkg.Author,
+		)
+	case "subscriptions", "subs", "mysubs":
+		response, err = topics.Subscriptions(parsed.pkg.Author)
 	case "meet":
 		response = meet.Driver{Client: parsed.client}.
 			NewMeeting(parsed.pkg.Author, parsed.args)
