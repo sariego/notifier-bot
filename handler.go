@@ -120,7 +120,7 @@ func execute(parsed instruction) (response string, err error) {
 	case "help":
 		response = help
 	case "version":
-		response = fmt.Sprintf("cotalker-bot %v", VERSION)
+		response = fmt.Sprintf("notifier-bot %v", VERSION)
 	}
 	return
 }
