@@ -25,3 +25,11 @@ create table if not exists "identity" (
   "channel_id"  varchar not null,
   "created"     timestamptz not null default now()
 );
+
+create table if not exists "subscription" (
+  "topic" varchar not null,
+  "user_id" varchar not null,
+  "channel_id" varchar not null,
+  "created" timestamptz not null default now(),
+  primary key("user_id", "topic")
+);
