@@ -6,9 +6,9 @@ values
 
 insert into "feedback" ("user_id", "channel_id", "tag", "content")
 values
-  ('user1', 'channel1', "feedback", 'Lorem Ipsum Dolor Sit Amet Consectetur Adipisicing Elit Sed Do Eiusmod Tempor'),
-  ('user2', 'channel2', "feedback", 'Lorem Ipsum Dolor Sit'),
-  ('user2', 'channelx', "bug", 'Lorem Ipsum Dolor Sit Amet Consectetur Ad');
+  ('user1', 'channel1', 'feedback', 'Lorem Ipsum Dolor Sit Amet Consectetur Adipisicing Elit Sed Do Eiusmod Tempor'),
+  ('user2', 'channel2', 'feedback', 'Lorem Ipsum Dolor Sit'),
+  ('user2', 'channelx', 'bug', 'Lorem Ipsum Dolor Sit Amet Consectetur Ad');
   
 insert into "identity" ("username", "user_id", "channel_id")
 values 
