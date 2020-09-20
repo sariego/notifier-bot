@@ -109,5 +109,5 @@ func execute(parsed instruction) (response string, err error) {
 }
 
 func hasMentionsSupport(c base.Client) bool {
-	return len(c.MentionsRedirectURL()) > 0
+	return len(c.ChannelURLTemplate()) > 0
 }

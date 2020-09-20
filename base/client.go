@@ -6,7 +6,8 @@ type Client interface {
 	Send(pkg Package) error
 	GetChannelInfo(id string) (ChannelInfo, error)
 	BotID() string
-	MentionsRedirectURL() string
+	ChannelURLTemplate() string
+	IsValidManagementChannel(id string) bool
 }
 
 // PackageHandler - handles individual packages

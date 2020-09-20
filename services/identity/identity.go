@@ -18,7 +18,7 @@ type Driver struct {
 // Register - add new identity to registry
 func (d Driver) Register(username, userID, channelID string) (string, error) {
 	// check if in private channel
-	if !d.isChannelValid(channelID) {
+	if !d.Client.IsValidManagementChannel(channelID) {
 		return "error :c\n" +
 			"solo puedo registrate en un canal directo,\n" +
 			"prueba en una conversación privada conmigo", nil
@@ -115,7 +115,7 @@ func (d Driver) NotifyMentions(pkg base.Package) error {
 				sender,
 				info.Name,
 				pkg.Message,
-				fmt.Sprintf(d.Client.MentionsRedirectURL(), pkg.Channel),
+				fmt.Sprintf(d.Client.ChannelURLTemplate(), pkg.Channel),
 			),
 		}
 		d.Client.Send(out)

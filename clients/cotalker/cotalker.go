@@ -41,9 +41,9 @@ func (c *Client) BotID() string {
 	return USERID
 }
 
-// MentionsRedirectURL - returns link to send users when @ mentioned
-// leave empty to disable mentions tracking
-func (c *Client) MentionsRedirectURL() string {
+// ChannelURLTemplate - returns template link to refer to channels
+// leave empty to disable mention and subscription tracking
+func (c *Client) ChannelURLTemplate() string {
 	return WEB + "/c/g/summary?channel=%v"
 }
 
@@ -161,6 +161,16 @@ func (c *Client) Send(pkg base.Package) error {
 	// fmt.Printf("res: %+v\n", res)
 
 	return nil
+}
+
+// IsValidManagementChannel - returns true if channel
+// has only one participant other than the bot
+func (c *Client) IsValidManagementChannel(id string) bool {
+	info, _ := c.GetChannelInfo(id)
+	p := info.Participants
+	bid := c.BotID()
+
+	return len(p) == 2 && (p[0] == bid || p[1] == bid)
 }
 
 // GetChannelInfo - get info from cotalker api
