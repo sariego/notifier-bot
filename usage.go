@@ -24,3 +24,9 @@ const help = `comandos disponibles:
 
 * !register y !subscribe solo se pueden usar en una conversación privada
 * al registrarte recibirás avisos en ese canal`
+
+const registry = `usuarios registrados
+https://data.heroku.com/dataclips/hsqoeznkyczynbncscendibqajfj
+
+suscripciones activas
+https://data.heroku.com/dataclips/vrwvzerranowsyjvewjkpmaqnobu`
