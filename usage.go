@@ -14,6 +14,9 @@ const help = `comandos disponibles:
 !unsubscribe TOPIC		desuscribe temas para no ser notificade
 !subscriptions			muestra tu lista de suscripciones
 
+!registry					revisa usuarios registrados y
+						suscripciones activas
+
 !meet [@USERNAMES...]	envía un link de meet, si especificas
 						usuarios estos serán notificados
 
