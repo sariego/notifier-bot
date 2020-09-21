@@ -5,11 +5,11 @@ import (
 	"log"
 	"strings"
 
-	"sariego.dev/cotalker-bot/base"
-	"sariego.dev/cotalker-bot/services/feedback"
-	"sariego.dev/cotalker-bot/services/identity"
-	"sariego.dev/cotalker-bot/services/meet"
-	"sariego.dev/cotalker-bot/services/topics"
+	"sariego.dev/notifier-bot/base"
+	"sariego.dev/notifier-bot/services/feedback"
+	"sariego.dev/notifier-bot/services/identity"
+	"sariego.dev/notifier-bot/services/meet"
+	"sariego.dev/notifier-bot/services/topics"
 )
 
 type pkgHandler struct {

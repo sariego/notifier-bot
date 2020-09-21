@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/lib/pq"
-	"sariego.dev/cotalker-bot/base"
+	"sariego.dev/notifier-bot/base"
 )
 
 // DB - sql connection pool

@@ -4,9 +4,9 @@ import (
 	"os"
 	"strings"
 
-	"sariego.dev/cotalker-bot/base"
-	"sariego.dev/cotalker-bot/clients/cotalker"
-	"sariego.dev/cotalker-bot/services/data"
+	"sariego.dev/notifier-bot/base"
+	"sariego.dev/notifier-bot/clients/cotalker"
+	"sariego.dev/notifier-bot/services/data"
 )
 
 const (

@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/lib/pq"
-	"sariego.dev/cotalker-bot/base"
-	"sariego.dev/cotalker-bot/services/data"
-	"sariego.dev/cotalker-bot/services/identity"
+	"sariego.dev/notifier-bot/base"
+	"sariego.dev/notifier-bot/services/data"
+	"sariego.dev/notifier-bot/services/identity"
 )
 
 // Driver [Topics] - manages user subscriptions

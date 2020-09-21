@@ -4,11 +4,11 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN go build -o cotalker-bot
+RUN go build -o notifier-bot
 
 FROM alpine:latest
 RUN mkdir /app
 WORKDIR /app
-COPY --from=builder /app/cotalker-bot .
+COPY --from=builder /app/notifier-bot .
 COPY --from=builder /app/services/meet/codes.dat ./services/meet/
-CMD ["./cotalker-bot"]
+CMD ["./notifier-bot"]

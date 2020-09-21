@@ -1,1 +1,1 @@
-worker: bin/cotalker-bot receive
+worker: bin/notifier-bot receive

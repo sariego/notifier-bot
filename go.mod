@@ -1,4 +1,4 @@
-module sariego.dev/cotalker-bot
+module sariego.dev/notifier-bot
 
 go 1.14
 

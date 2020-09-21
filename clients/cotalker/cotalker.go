@@ -17,7 +17,7 @@ import (
 	"github.com/googollee/go-engine.io/transport"
 	"github.com/googollee/go-engine.io/transport/polling"
 	"github.com/googollee/go-engine.io/transport/websocket"
-	"sariego.dev/cotalker-bot/base"
+	"sariego.dev/notifier-bot/base"
 )
 
 var (

@@ -3,7 +3,7 @@ package feedback
 import (
 	"log"
 
-	"sariego.dev/cotalker-bot/services/data"
+	"sariego.dev/notifier-bot/services/data"
 )
 
 // Create - creates new feedback
