@@ -69,6 +69,27 @@ func (c *Client) Receive(handler base.PackageHandler) error {
 	defer conn.Close()
 	log.Println("conn: ", conn.ID(), conn.LocalAddr(), "~>", conn.RemoteAddr())
 	//todo log headers ??
+
+	w, err := conn.NextWriter(engineio.BINARY)
+	if err != nil {
+		log.Println("error@next_writer:", err)
+		return err
+	}
+	st := status{
+		Socket:  false,
+		Pooling: false,
+	}
+	p, err := json.Marshal(&st)
+	if err != nil {
+		log.Println("error@handshake_marshal:", err)
+		return err
+	}
+	_, err = w.Write(p)
+	if err != nil {
+		log.Println("error@handshake_write:", err)
+		return err
+	}
+
 	log.Println("listening...")
 	for {
 		_, r, err := conn.NextReader()
@@ -95,6 +116,7 @@ func (c *Client) Receive(handler base.PackageHandler) error {
 		err = json.Unmarshal([]byte(args[2]), &e)
 		if err != nil {
 			log.Println("error@cmd_unmarshal:", err)
+			// continue
 		}
 
 		ev := args[0][1 : len(args[0])-1]
@@ -224,6 +246,11 @@ type channel struct {
 	ID           string   `json:"_id"`
 	Name         string   `json:"nameDisplay"`
 	Participants []string `json:"userIds"`
+}
+
+type status struct {
+	Socket  bool `json:"socketStatus"`
+	Pooling bool `json:"poolingStatus"`
 }
 
 func init() {
